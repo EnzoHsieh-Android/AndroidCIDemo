@@ -14,8 +14,8 @@ ext {
     set("versionName", "1.0.0")
 
     // 版本管理
-    set("kotlinVersion", "2.0.21")
-    set("gradleVersion", "8.10.0")
+    set("kotlinVersion", "2.0.20")
+    set("gradleVersion", "8.7.3")
 }
 
 // 清理任務
