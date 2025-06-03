@@ -6,25 +6,32 @@ plugins {
 
 android {
     namespace = "com.enzo.androidcidemo"
-    compileSdk = 35
+    compileSdk = rootProject.ext.get("compileSdkVersion") as Int
 
     defaultConfig {
         applicationId = "com.enzo.androidcidemo"
-        minSdk = 26
-        targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        minSdk = rootProject.ext.get("minSdkVersion") as Int
+        targetSdk = rootProject.ext.get("targetSdkVersion") as Int
+        versionCode = rootProject.ext.get("versionCode") as Int
+        versionName = rootProject.ext.get("versionName") as String
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // 設定簽名配置
+            signingConfig = signingConfigs.getByName("debug")
+        }
+        debug {
+            isDebuggable = true
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
         }
     }
     compileOptions {
@@ -36,6 +43,17 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+    // 輸出檔案命名規則
+    applicationVariants.all {
+        outputs.all {
+            val outputImpl = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
+            val buildType = buildType.name
+            val versionName = versionName
+            val versionCode = versionCode
+
+            outputImpl.outputFileName = "AndroidCIDemo-${buildType}-v${versionName}-${versionCode}.apk"
+        }
     }
 }
 
@@ -56,4 +74,20 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+}
+
+// 自訂任務：建置資訊
+tasks.register("buildInfo") {
+    group = "build"
+    description = "顯示建置資訊"
+
+    doLast {
+        println("=== 建置資訊 ===")
+        println("建置時間: ${System.currentTimeMillis()}")
+        println("建置類型: ${android.buildTypes.names}")
+        println("輸出目錄: ${layout.buildDirectory.get()}/outputs/apk/")
+        println("專案版本: ${android.defaultConfig.versionName}")
+        println("版本代碼: ${android.defaultConfig.versionCode}")
+        println("===============")
+    }
 }
