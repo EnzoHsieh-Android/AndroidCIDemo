@@ -27,7 +27,7 @@ jobs:
           distribution: 'temurin'
 
       - name: 設定Gradle快取
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
@@ -43,7 +43,7 @@ jobs:
         run: ./gradlew test --stacktrace
 
       - name: 上傳測試報告
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: test-reports
@@ -84,7 +84,7 @@ jobs:
         run: ./gradlew buildInfo
 
       - name: 上傳Debug APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: debug-apk
           path: app/build/outputs/apk/debug/*.apk
@@ -104,7 +104,7 @@ jobs:
           distribution: 'temurin'
 
       - name: 設定Gradle快取
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
@@ -120,7 +120,7 @@ jobs:
         run: ./gradlew lintDebug --stacktrace
 
       - name: 上傳Lint報告
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: lint-reports
