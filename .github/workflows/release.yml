@@ -38,6 +38,14 @@ jobs:
       - name: 賦予Gradle執行權限
         run: chmod +x gradlew
 
+      - name: 解碼並設定Keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > release-keystore.jks
+          echo "storeFile=release-keystore.jks" > keystore.properties
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> keystore.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> keystore.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> keystore.properties
+
       - name: 執行測試
         run: ./gradlew test --stacktrace
 
