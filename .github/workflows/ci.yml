@@ -40,14 +40,16 @@ jobs:
         run: chmod +x gradlew
 
       - name: 執行單元測試
-        run: ./gradlew test --stacktrace
+        run: ./gradlew test testDebugUnitTest --stacktrace
 
       - name: 上傳測試報告
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: test-reports
-          path: app/build/reports/tests/
+          path: |
+            app/build/reports/tests/
+            app/build/test-results/
 
   build:
     name: 建置APK
@@ -124,4 +126,6 @@ jobs:
         if: always()
         with:
           name: lint-reports
-          path: app/build/reports/lint-results-debug.html
+          path: |
+            app/build/reports/lint-results-*.html
+            app/build/reports/lint-results-*.xml
