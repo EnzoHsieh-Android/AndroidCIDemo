@@ -1,0 +1,54 @@
+name: Project Status
+
+# 每天UTC時間00:00執行，或手動觸發
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  project-status:
+    name: 專案狀態檢查
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 檢出程式碼
+        uses: actions/checkout@v4
+
+      - name: 設定JDK 11
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - name: 賦予Gradle執行權限
+        run: chmod +x gradlew
+
+      - name: 顯示專案資訊
+        run: ./gradlew projectInfo
+
+      - name: 檢查依賴關係更新
+        run: ./gradlew dependencyUpdates || true
+
+      - name: 產生專案報告
+        run: |
+          echo "# 專案狀態報告 📊" > project_status.md
+          echo "" >> project_status.md
+          echo "**生成時間**: $(date)" >> project_status.md
+          echo "" >> project_status.md
+          echo "## Gradle資訊" >> project_status.md
+          echo "\`\`\`" >> project_status.md
+          ./gradlew projectInfo >> project_status.md
+          echo "\`\`\`" >> project_status.md
+          echo "" >> project_status.md
+          echo "## 專案結構" >> project_status.md
+          echo "\`\`\`" >> project_status.md
+          find . -type f -name "*.kt" -o -name "*.java" | wc -l | xargs echo "Kotlin/Java檔案數量:" >> project_status.md
+          find . -type f -name "*.xml" | wc -l | xargs echo "XML檔案數量:" >> project_status.md
+          echo "\`\`\`" >> project_status.md
+
+      - name: 上傳狀態報告
+        uses: actions/upload-artifact@v3
+        with:
+          name: project-status-report
+          path: project_status.md
